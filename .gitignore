@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/MockApi.Client/bin/Debug/netstandard2.0
+/MockApi.Client/obj
+/MockApi.Sample/bin/Debug/netcoreapp2.0
+/MockApi.Sample/obj
+/MockApi.Server/bin/Debug/netcoreapp2.0
+/MockApi.Server/obj
