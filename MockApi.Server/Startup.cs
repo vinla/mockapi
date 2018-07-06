@@ -39,9 +39,9 @@ namespace MockApi.Server
 					await context.Request.Body.ReadAsync(buffer, 0, buffer.Length);
 					bodyAsText = ASCIIEncoding.ASCII.GetString(buffer);
 				}
-
+                
 				var handler = Handlers.HandlerFactory.GetHandler(path);
-				var response = handler.ProcessRequest(path, bodyAsText);				
+				var response = handler.ProcessRequest(context.Request.Method, path, bodyAsText);				
 				await context.Response.WriteAsync(response);
 			});
         }

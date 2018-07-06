@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System.Net.Http;
 
 namespace MockApi.Server.Handlers
 {
     public class ValidationHandler : IRequestHandler
     {
-        public string ProcessRequest(PathString path, string bodyText)
+        public string ProcessRequest(string method, PathString path, string bodyText)
         {
-            var route = path.Value.Replace("/_validate", "");
-            var routeSetup = DataCache.RouteSetups.SingleOrDefault(r => r.Route == route);
+            var requestMethod = new HttpMethod(path.GetSegment(1));
+            var requestPath = "/" + path.FromSegment(2);
+            var routeSetup = DataCache.RouteSetups.SingleOrDefault(r => r.Path == requestPath && r.Method == requestMethod);
 
             if(routeSetup != null)
             {

@@ -55,6 +55,9 @@ namespace MockApi.Server
 
 		private JObject BodyAsObject(string body)
 		{
+			if(string.IsNullOrEmpty(body))
+				return null;
+				
 			var jsonObject = JObject.Parse(body);
 			return jsonObject;
 		}

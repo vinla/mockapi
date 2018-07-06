@@ -1,23 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 
 namespace MockApi.Server
 {
 public class RouteSetup
 	{
-		private readonly string _route;
+		private readonly HttpMethod _method;
+		private readonly string _path;
 		private readonly string _response;
 		private readonly List<(string path, string request)> _requests;
 
-		public RouteSetup(string route, string response)
+		public RouteSetup(HttpMethod method, string path, string response)
 		{
-			_route = route;
+			_method = method;
+			_path = path;
 			_response = response;
 			_requests = new List<(string, string)>();
 		}
 
-		public string Route => _route;
+		public HttpMethod Method => _method;
+
+		public string Path => _path;
 
 		public string Response => _response;
 
@@ -28,31 +33,35 @@ public class RouteSetup
 			_requests.Add((path, request));
 		}
 
-		public RouteMatch MatchesOn(string requestPath)
+		public RouteMatch MatchesOn(HttpMethod method, string requestPath)
 		{
-			var routeParts = _route.Split('/');
-			var requestParts = requestPath.Split('/');
-			var wildcards = new Dictionary<string, string>();
-
-			if(routeParts.Length == requestParts.Length)
+			Console.WriteLine(method + " = " + _method);
+			
+			if(method == _method)
 			{
-				for(int i = 0; i < routeParts.Length; i++)
+				var routeParts = _path.Split('/');
+				var requestParts = requestPath.Split('/');
+				var wildcards = new Dictionary<string, string>();
+
+				if(routeParts.Length == requestParts.Length)
 				{
-					var routePart = routeParts[i];
-					var requestPart = requestParts[i];
-
-					if (routePart.StartsWith('{'))
+					for(int i = 0; i < routeParts.Length; i++)
 					{
-						var wildcardKey = routePart.Substring(1, routePart.Length - 2);
-						wildcards.Add(wildcardKey, requestPart);
+						var routePart = routeParts[i];
+						var requestPart = requestParts[i];
+
+						if (routePart.StartsWith('{'))
+						{
+							var wildcardKey = routePart.Substring(1, routePart.Length - 2);
+							wildcards.Add(wildcardKey, requestPart);
+						}
+						else if (routePart != requestPart)
+							return RouteMatch.NoMatch;
 					}
-					else if (routePart != requestPart)
-						return RouteMatch.NoMatch;
+
+					return new RouteMatch(this, wildcards);
 				}
-
-				return new RouteMatch(this, wildcards);
 			}
-
 			return RouteMatch.NoMatch;
 		}		
 	}

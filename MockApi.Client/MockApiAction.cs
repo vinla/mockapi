@@ -11,16 +11,18 @@ namespace MockApi.Client
     {
         private readonly string _host;
         private readonly string _path;
+        private readonly string _method;
 
-        public MockApiAction(string host, string path)
+        public MockApiAction(string host, string method, string path)
         {
             _host = host;
             _path = path;
+            _method = method;
         }
 
         public async Task Returns(string document)
         {            
-            var uri = $"{_host}/_setup/{_path}";
+            var uri = $"{_host}/_setup/{_method}/{_path}";
 
             using(var client = new HttpClient())
             {

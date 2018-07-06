@@ -18,14 +18,14 @@ namespace MockApi.Client
             _mockApiHost = mockApiHost;
         }
 
-        public MockApiAction Setup(string path)
+        public MockApiAction Setup(string method, string path)
         {
-            return new MockApiAction(_mockApiHost, path);
+            return new MockApiAction(_mockApiHost, method, path);
         }                
 
-        public async Task<IEnumerable<MockApiCallDetails>> Calls(string path)
+        public async Task<IEnumerable<MockApiCallDetails>> Calls(string method, string path)
         {
-            var uri = $"{_mockApiHost}/_validate/{path}";
+            var uri = $"{_mockApiHost}/_validate/{method}/{path}";
 
             using(var client = new HttpClient())
             {
@@ -40,7 +40,11 @@ namespace MockApi.Client
 
                 foreach (var request in requests.Children())
                 {
-                    results.Add(new MockApiCallDetails(request["path"].ToString(), JObject.Parse(request["body"].ToString()) ));
+                    JObject body = null;
+                    // var temp = request["body"].ToString();
+                    // if(string.IsNullOrEmpty(temp))
+                    //     body = JObject.Parse(temp);
+                    results.Add(new MockApiCallDetails(request["path"].ToString(), body));
                 }
 
                 return results;
